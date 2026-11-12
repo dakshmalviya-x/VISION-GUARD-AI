@@ -1,0 +1,244 @@
+/**
+ * VisionGuard – Privacy Shield
+ * shield.css — Injected into every monitored page by background.js.
+ *
+ * These rules style the DOM elements that content-script.js injects:
+ *   #vg-camera-widget  — floating camera preview panel (bottom-right)
+ *   #vg-shield-overlay — full-screen privacy blur overlay
+ *   #vg-enroll-panel   — floating enrollment capture panel
+ *
+ * CRITICAL: All rules must use very high z-index values so VisionGuard's UI
+ * always renders above the host page's own elements (which may themselves use
+ * high z-indexes for modals, sticky headers, etc.).
+ *
+ * SCOPING: All selectors are prefixed with #vg- to avoid colliding with the
+ * host page's CSS rules — VisionGuard must not alter the host page's layout.
+ */
+
+/* =========================================================================
+   CAMERA WIDGET
+   A compact floating panel showing the live webcam feed + face overlay canvas.
+   Always visible while VisionGuard is active so the user can see the feed.
+   ========================================================================= */
+#vg-camera-widget {
+  /* Position fixed keeps it in the viewport even when the page scrolls */
+  position: fixed;
+
+  /* Bottom-right corner is least intrusive — avoids blocking page content */
+  bottom: 16px;
+  right: 16px;
+
+  /* Fixed dimensions: 240×180 is a 4:3 aspect ratio matching the camera feed */
+  width: 240px;
+  height: 180px;
+
+  /* Dark card background — matches VisionGuard's cybersecurity theme */
+  background: #0d1526;
+
+  /* Subtle cyan border to indicate the widget belongs to VisionGuard */
+  border: 1px solid rgba(0, 229, 255, 0.35);
+
+  /* Rounded corners so the widget looks like a UI card, not a raw rectangle */
+  border-radius: 10px;
+
+  /* Clip children (video/canvas) to the rounded corners */
+  overflow: hidden;
+
+  /* Highest possible z-index integer: 2^31 - 1.
+     This ensures VisionGuard renders above ANY element on the host page. */
+  z-index: 2147483647;
+
+  /* Subtle glow to make the widget identifiable at a glance */
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(0, 229, 255, 0.15);
+
+  /* Flex layout to stack video + header label vertically inside the widget */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Label bar at the top of the camera widget */
+#vg-camera-widget .vg-widget-label {
+  /* Sits above the video — provides context for what the feed is */
+  position: relative;
+  z-index: 1; /* Above the video element */
+  padding: 4px 8px;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #00e5ff; /* Cyan matches brand accent */
+  text-transform: uppercase;
+  background: rgba(7, 11, 20, 0.85); /* Semi-transparent dark strip */
+  user-select: none; /* Prevent accidental text selection when clicking the widget */
+}
+
+/* The live webcam <video> element inside the widget */
+#vg-camera-widget video {
+  /* Fill the remaining widget height after the label strip */
+  flex: 1;
+  width: 100%;
+  /* object-fit cover crops the feed to fill the box without letterboxing */
+  object-fit: cover;
+  /* Mirror the feed horizontally so gestures appear natural (like a mirror) */
+  transform: scaleX(-1);
+  display: block; /* Remove inline element gap below the video element */
+}
+
+/* The face overlay <canvas> stacked on top of the video */
+#vg-camera-widget canvas {
+  /* absolute positioning layers the canvas directly over the video */
+  position: absolute;
+  /* top offset accounts for the label bar height (~25px) */
+  top: 25px;
+  left: 0;
+  width: 100%;
+  /* Height fills the rest of the widget below the label */
+  height: calc(100% - 25px);
+  /* pointer-events none prevents the canvas from intercepting mouse clicks
+     that should reach the page or the video element */
+  pointer-events: none;
+  /* Mirror to match the flipped video so face boxes align correctly */
+  transform: scaleX(-1);
+}
+
+/* =========================================================================
+   SHIELD OVERLAY
+   Full-screen semi-transparent overlay shown during PRIVACY_ALERT state.
+   Blurs the user's view of the page content to protect sensitive data.
+   ========================================================================= */
+#vg-shield-overlay {
+  /* Fixed positioning fills the entire viewport */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+
+  /* One below the camera widget so the widget remains visible over the overlay */
+  z-index: 2147483646;
+
+  /* Hidden by default — content-script.js switches to flex when activated */
+  display: none;
+
+  /* Flex centres the warning message text both horizontally and vertically */
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+
+  /* Semi-transparent dark background dims the page content underneath */
+  background: rgba(7, 11, 20, 0.92);
+
+  /* Backdrop filter blurs the page content behind the overlay.
+     This is the actual "privacy blur" — the page content becomes unreadable. */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px); /* Safari / older Chrome prefix */
+
+  /* Smooth fade-in/out when the shield activates or deactivates */
+  transition: opacity 0.35s ease;
+}
+
+/* Large warning icon / emoji displayed in the centre of the overlay */
+#vg-shield-overlay .vg-shield-icon {
+  font-size: 56px;
+  line-height: 1;
+  /* Pulse animation draws attention to the security event */
+  animation: vg-pulse 1.4s ease-in-out infinite;
+}
+
+/* Primary warning headline */
+#vg-shield-overlay .vg-shield-title {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: #ff1744; /* Bright red — highest severity visual signal */
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* Secondary descriptive text below the headline */
+#vg-shield-overlay .vg-shield-subtitle {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: rgba(226, 232, 240, 0.75); /* Slightly muted white */
+  text-align: center;
+  max-width: 320px;
+  line-height: 1.6;
+}
+
+/* Keyframe animation: gentle pulse on the warning icon */
+@keyframes vg-pulse {
+  0%, 100% { transform: scale(1);    opacity: 1;    }
+  50%       { transform: scale(1.1); opacity: 0.75; }
+}
+
+/* =========================================================================
+   ENROLLMENT PANEL
+   Floating card shown over the host page during the enrollment capture flow.
+   content-script.js shows/hides this panel during enrollment.
+   ========================================================================= */
+#vg-enroll-panel {
+  /* Fixed so it appears centred in the viewport regardless of scroll position */
+  position: fixed;
+
+  /* Horizontally and vertically centred */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* True centre offset for elements with size */
+
+  /* Compact enrollment UI — wide enough for instructions, not too intrusive */
+  width: 300px;
+
+  /* Dark card background matching VisionGuard's design system */
+  background: #0d1526;
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  border-radius: 12px;
+  padding: 20px;
+
+  /* Above the overlay so the user can interact with enrollment even during alert */
+  z-index: 2147483647;
+
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 229, 255, 0.1);
+
+  /* Flex column layout for label → progress → button stack */
+  display: none; /* Hidden by default; content-script.js sets display:flex to show */
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Panel title */
+#vg-enroll-panel .vg-enroll-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #00e5ff;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+/* Instructions / status text shown during capture */
+#vg-enroll-panel .vg-enroll-status {
+  font-size: 12px;
+  color: #e2e8f0;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Progress bar container */
+#vg-enroll-panel .vg-enroll-progress-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+/* Animated fill bar — width is set inline by content-script.js */
+#vg-enroll-panel .vg-enroll-progress-fill {
+  height: 100%;
+  background: #00e5ff;
+  border-radius: 3px;
+  transition: width 0.3s ease; /* Smooth progress bar fill animation */
+}

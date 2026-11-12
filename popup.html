@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VisionGuard</title>
+
+  <!-- Inter font from Google Fonts — clean, modern sans-serif for the popup UI -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Popup stylesheet — dark cybersecurity theme, 340px layout -->
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="vg-header">
+    <!-- Shield icon (inline SVG — no extra file needed) -->
+    <svg class="vg-logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M12 2L3 6v6c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V6L12 2z" fill="currentColor" opacity="0.15"/>
+      <path d="M12 2L3 6v6c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V6L12 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="vg-header-text">
+      <span class="vg-brand">VisionGuard</span>
+      <span class="vg-tagline">Privacy Shield</span>
+    </div>
+  </header>
+
+  <!-- ===== STATUS SECTION ===== -->
+  <section class="vg-section" id="status-section">
+    <div class="vg-status-row">
+      <span class="vg-label">Shield Status</span>
+      <!-- Badge shows "ACTIVE ON THIS TAB" (green) or "INACTIVE" (muted) -->
+      <!-- popup.js sets the data-state attribute to drive CSS color changes -->
+      <span class="vg-badge" id="status-badge" data-state="inactive">INACTIVE</span>
+    </div>
+  </section>
+
+  <!-- ===== TOGGLE BUTTON ===== -->
+  <div class="vg-btn-group">
+    <!-- Main action button — text and style toggled by popup.js -->
+    <button class="vg-btn vg-btn-primary" id="toggle-btn">Enable on This Tab</button>
+  </div>
+
+  <!-- ===== DIVIDER ===== -->
+  <hr class="vg-divider" />
+
+  <!-- ===== ENROLLMENT SECTION ===== -->
+  <section class="vg-section" id="enrollment-section">
+    <div class="vg-label-row">
+      <span class="vg-label">Enrolled Identity</span>
+      <!-- Shows enrolled user's name, or "Not Enrolled" -->
+      <span class="vg-enrolled-name" id="enrolled-name">Not Enrolled</span>
+    </div>
+
+    <div class="vg-btn-group vg-btn-group--row">
+      <!-- Enroll button: triggers face capture flow in the content script -->
+      <button class="vg-btn vg-btn-secondary" id="enroll-btn">Enroll User</button>
+      <!-- Reset button: wipes the stored biometric vector -->
+      <button class="vg-btn vg-btn-danger" id="reset-btn">Reset</button>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="vg-footer">
+    <!-- Reassure the user that all processing is local — a key privacy feature -->
+    <span>🔒 100% On-Device · Zero Data Sent</span>
+  </footer>
+
+  <!-- Popup logic — NOT type="module" because Manifest V3 popup scripts must be classic scripts -->
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+# Node modules
+node_modules/
+package-lock.json
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary/scratch files
+scratch/
+*.log

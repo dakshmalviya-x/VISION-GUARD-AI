@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "VisionGuard – Privacy Shield",
+  "version": "1.0.0",
+  "description": "AI-powered shoulder-surf detector. Blurs sensitive webpage content when unauthorized viewers are detected via your webcam.",
+  "permissions": ["storage", "activeTab", "scripting"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "VisionGuard Privacy Shield"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "js/vendor/face-api.js",
+        "js/config.js",
+        "js/camera.js",
+        "js/face-detection.js",
+        "js/face-recognition.js",
+        "js/gaze-estimation.js",
+        "js/security-engine.js",
+        "js/enrollment.js",
+        "js/content-script.js",
+        "models/*",
+        "shield.css"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

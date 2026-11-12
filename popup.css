@@ -1,0 +1,281 @@
+/**
+ * VisionGuard – Privacy Shield
+ * popup.css — Styles for the browser-action popup (popup.html).
+ *
+ * Design language: dark cybersecurity / "cyber-terminal" aesthetic.
+ * Popup is constrained to 340px wide by Chrome's extension popup rules.
+ * We use CSS custom properties so the palette is easy to adjust in one place.
+ */
+
+/* =========================================================================
+   DESIGN TOKENS
+   Define all colours, typography, and spacing as variables so they can be
+   referenced consistently throughout the file and easily updated.
+   ========================================================================= */
+:root {
+  /* Background layers — dark navy to give a "command centre" feel */
+  --bg-dark:    #070b14; /* Deepest background, used on body */
+  --bg-card:    #0d1526; /* Slightly lighter panel / card background */
+
+  /* Accent colours — matching the main app's visual language */
+  --accent-cyan: #00e5ff; /* Primary interactive colour: buttons, active states */
+  --accent-red:  #ff1744; /* Danger / alert colour */
+
+  /* Text colours */
+  --text-main:  #e2e8f0; /* High-contrast body text */
+  --text-muted: #64748b; /* Secondary / helper text */
+
+  /* Security state colours — mirror constants in security-engine.js */
+  --state-safe:    #00e676; /* Green  → SAFE / ACTIVE */
+  --state-caution: #ff9100; /* Amber  → CAUTION */
+  --state-alert:   #ff1744; /* Red    → PRIVACY_ALERT */
+
+  /* Subtle borders — white at very low opacity so they're visible on dark BG */
+  --border-subtle: rgba(255, 255, 255, 0.08);
+
+  /* Monospace font for data values (distances, state names) */
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* =========================================================================
+   RESET & BASE
+   Minimal reset to override browser default popup styles (white bg, etc.)
+   ========================================================================= */
+*, *::before, *::after {
+  box-sizing: border-box; /* Include padding/border in element width — prevents layout surprises */
+  margin: 0;
+  padding: 0;
+}
+
+/* Force the popup body to exactly 340px wide — Chrome respects this.
+   min-height prevents the popup from collapsing when content is short. */
+body {
+  width: 340px;
+  min-height: 200px;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, sans-serif; /* Inter loaded from Google Fonts in popup.html */
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-x: hidden; /* No horizontal scroll in a popup */
+}
+
+/* =========================================================================
+   HEADER
+   Branding area at the top: shield icon + name + tagline.
+   ========================================================================= */
+.vg-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--border-subtle); /* Visual separator from content below */
+  background: var(--bg-card); /* Slightly elevated surface */
+}
+
+/* The inline SVG shield icon */
+.vg-logo-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;         /* Don't let the icon shrink if the row is tight */
+  color: var(--accent-cyan); /* SVG uses `currentColor` so this drives stroke/fill */
+}
+
+/* Text stack: brand name + tagline stacked vertically */
+.vg-header-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+/* Large, bold brand name */
+.vg-brand {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  letter-spacing: 0.5px;
+}
+
+/* Smaller descriptor line */
+.vg-tagline {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* =========================================================================
+   SECTIONS
+   Generic padded content blocks used for status and enrollment areas.
+   ========================================================================= */
+.vg-section {
+  padding: 12px 16px;
+}
+
+/* A row that places a label on the left and a value on the right */
+.vg-status-row,
+.vg-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Muted uppercase category label (e.g. "Shield Status", "Enrolled Identity") */
+.vg-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* =========================================================================
+   STATUS BADGE
+   Changes colour based on the data-state attribute set by popup.js.
+   Using attribute selectors keeps JS out of the style logic.
+   ========================================================================= */
+.vg-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 20px; /* Pill shape */
+  border: 1px solid currentColor; /* Border matches text colour automatically */
+  transition: color 0.3s, background-color 0.3s; /* Smooth colour transitions */
+}
+
+/* Inactive state — neutral/muted so the shield being off is visually obvious */
+.vg-badge[data-state="inactive"] {
+  color: var(--text-muted);
+  background-color: rgba(100, 116, 139, 0.12);
+}
+
+/* Active state — bright green to signal the shield is protecting the user */
+.vg-badge[data-state="active"] {
+  color: var(--state-safe);
+  background-color: rgba(0, 230, 118, 0.12);
+}
+
+/* =========================================================================
+   ENROLLED IDENTITY NAME
+   Shows the enrolled user's name or "Not Enrolled".
+   ========================================================================= */
+.vg-enrolled-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted); /* Muted when not enrolled */
+  transition: color 0.3s;
+}
+
+/* popup.js adds the .enrolled class when a user is found in storage */
+.vg-enrolled-name.enrolled {
+  color: var(--state-safe); /* Green when an identity exists */
+}
+
+/* =========================================================================
+   BUTTONS
+   Three variants: primary (cyan), secondary (outlined), danger (red-tinted).
+   ========================================================================= */
+
+/* Wrapper that pads and stacks button(s) */
+.vg-btn-group {
+  padding: 4px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Row variant: used for Enroll + Reset side-by-side */
+.vg-btn-group--row {
+  flex-direction: row;
+  padding-top: 10px;
+}
+
+/* Base button styles shared by all variants */
+.vg-btn {
+  flex: 1; /* Fill available width in a row group */
+  padding: 9px 14px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Primary: solid cyan — the main "Enable" action */
+.vg-btn-primary {
+  background-color: var(--accent-cyan);
+  color: #000; /* Black text on bright cyan for contrast ratio compliance */
+  border-color: var(--accent-cyan);
+}
+
+.vg-btn-primary:hover {
+  background-color: #00b8d4; /* Slightly darker cyan on hover — provides click affordance */
+  border-color: #00b8d4;
+}
+
+/* When the shield is ACTIVE, the toggle button becomes a "Disable Shield" button.
+   popup.js adds this class to shift from cyan → red-tinted danger variant. */
+.vg-btn-primary.vg-btn--active {
+  background-color: rgba(255, 23, 68, 0.15);
+  color: var(--accent-red);
+  border-color: var(--accent-red);
+}
+
+.vg-btn-primary.vg-btn--active:hover {
+  background-color: rgba(255, 23, 68, 0.28); /* Deeper red on hover */
+}
+
+/* Secondary: outlined — used for "Enroll User" (less emphasis than primary) */
+.vg-btn-secondary {
+  background-color: rgba(0, 229, 255, 0.08);
+  color: var(--accent-cyan);
+  border-color: rgba(0, 229, 255, 0.35);
+}
+
+.vg-btn-secondary:hover {
+  background-color: rgba(0, 229, 255, 0.18);
+  border-color: var(--accent-cyan);
+}
+
+/* Danger: subtle red — used for "Reset" (destructive action needs clear signal) */
+.vg-btn-danger {
+  background-color: rgba(255, 23, 68, 0.08);
+  color: var(--accent-red);
+  border-color: rgba(255, 23, 68, 0.3);
+}
+
+.vg-btn-danger:hover {
+  background-color: rgba(255, 23, 68, 0.2);
+  border-color: var(--accent-red);
+}
+
+/* =========================================================================
+   DIVIDER
+   Thin horizontal rule that visually separates the toggle area from enrollment.
+   ========================================================================= */
+.vg-divider {
+  border: none;
+  border-top: 1px solid var(--border-subtle);
+  margin: 0 16px; /* Inset from popup edges so it doesn't span full width */
+}
+
+/* =========================================================================
+   FOOTER
+   Privacy assurance message at the very bottom of the popup.
+   ========================================================================= */
+.vg-footer {
+  padding: 10px 16px 14px;
+  text-align: center;
+  font-size: 10px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border-subtle);
+  letter-spacing: 0.3px;
+}
