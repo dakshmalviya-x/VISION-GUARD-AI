@@ -2,6 +2,8 @@
 
 This document defines the module boundaries, technical ownership, testing duties, and presentation topics for the three team members collaborating on **VisionGuard: AI-Powered Facial Access Control System**.
 
+This is a historical academic contribution record for the earlier standalone prototype. The current extension runtime is documented in [architecture.md](architecture.md); file names and implementation details below may refer to prototype files that are no longer part of the extension package.
+
 All three members worked on a single shared development laptop and common Git repository. To prevent merge conflicts and ensure fair contribution, the architecture is partitioned into three cleanly decoupled subsystems.
 
 ---

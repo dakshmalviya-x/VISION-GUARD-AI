@@ -54,7 +54,7 @@ body {
   min-height: 200px;
   background-color: var(--bg-dark);
   color: var(--text-main);
-  font-family: 'Inter', system-ui, sans-serif; /* Inter loaded from Google Fonts in popup.html */
+  font-family: system-ui, sans-serif;
   font-size: 13px;
   line-height: 1.5;
   overflow-x: hidden; /* No horizontal scroll in a popup */
