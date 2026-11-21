@@ -71,7 +71,7 @@ export class FaceRecognizer {
       return true;
     }
 
-    // face-api.js is loaded via a <script> tag in index.html and exposed as window.faceapi.
+    // The calling environment must expose the bundled face-api.js library as window.faceapi.
     // If that script tag is missing or failed to parse, we throw immediately with a clear message
     // rather than letting a cryptic "undefined is not an object" error surface later.
     if (typeof window.faceapi === 'undefined') {

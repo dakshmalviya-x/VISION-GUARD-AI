@@ -10,18 +10,16 @@ All models run client-side in the browser via TensorFlow.js / WebGL. No video st
 
 | Model Name | Files | Architecture | Input Shape | Purpose in VisionGuard |
 |---|---|---|---|---|
-| **Tiny Face Detector** | `tiny_face_detector_model-weights_manifest.json`<br>`tiny_face_detector_model.bin` (~190 KB) | Constrained Depthwise Separable CNN | 320x240 or 416x416 RGB | Real-time face detection with low latency (<15ms per frame on modern browsers). |
-| **SSD MobileNet V1** | `ssd_mobilenetv1_model-weights_manifest.json`<br>`ssd_mobilenetv1_model.bin` (~5.6 MB) | Single Shot MultiBox Detector with MobileNetV1 backbone | Dynamic RGB | High-accuracy fallback face detector when higher confidence is required. |
-| **Face Landmark 68 Net** | `face_landmark_68_model-weights_manifest.json`<br>`face_landmark_68_model.bin` (~357 KB) | Multi-stage CNN regressor | 150x150 cropped face chip | Predicts 68 2D facial landmark coordinates (eyes, eyebrows, nose, mouth, jawline). Used for gaze & head pose estimation. |
-| **Face Landmark 68 Tiny** | `face_landmark_68_tiny_model-weights_manifest.json`<br>`face_landmark_68_tiny_model.bin` (~77 KB) | Lightweight landmark regressor | 150x150 cropped face chip | Ultra-lightweight fallback for low-power hardware. |
-| **Face Recognition Net** | `face_recognition_model-weights_manifest.json`<br>`face_recognition_model.bin` (~6.4 MB) | ResNet-34 based deep metric learning architecture | 150x150 normalized face chip | Extracts a 128-dimensional Float32Array facial embedding vector (face descriptor). |
+| **Tiny Face Detector** | `tiny_face_detector_model-weights_manifest.json`<br>`tiny_face_detector_model.bin` (~190 KB) | Constrained Depthwise Separable CNN | 320x240 or 416x416 RGB | Detects faces in the webcam stream. |
+| **Face Landmark 68 Net** | `face_landmark_68_model-weights_manifest.json`<br>`face_landmark_68_model.bin` (~357 KB) | Multi-stage CNN regressor | 150x150 cropped face chip | Predicts 68 facial landmarks for gaze and head-pose estimation. |
+| **Face Recognition Net** | `face_recognition_model-weights_manifest.json`<br>`face_recognition_model.bin` (~6.4 MB) | ResNet-34 based deep metric learning architecture | 150x150 normalized face chip | Extracts a 128-dimensional facial descriptor for identity matching. |
 
 ---
 
 ## 2. Model Roles in VisionGuard Pipeline
 
 1. **Member 1 (Face Detection & Recognition)**:
-   - Uses `tiny_face_detector` or `ssd_mobilenetv1` to detect bounding boxes for each person visible in the webcam stream.
+   - Uses `tiny_face_detector` to detect bounding boxes for people visible in the webcam stream.
    - Uses `face_recognition_model` to project detected faces into a 128-dimensional hypersphere where Euclidean distance represents identity variance.
    - Matches detected embeddings against the enrolled authorized user's stored vector.
 
@@ -30,9 +28,9 @@ All models run client-side in the browser via TensorFlow.js / WebGL. No video st
    - Computes Eye Aspect Ratio (EAR), iris/pupil horizontal & vertical offset ratios, and head pose yaw/pitch to estimate whether a detected face is gazing toward the monitor screen.
    - Feeds detection count, identity match confidence, and gaze direction into the multi-frame security decision engine.
 
-3. **Member 3 (Frontend & Privacy Shield)**:
-   - Visualizes bounding boxes, landmark points, identity labels, and gaze direction arrows on a canvas layer above the webcam feed.
-   - Activates or releases the CSS blur shield and warning banner according to the engine's security state.
+3. **Extension Runtime & Privacy Shield**:
+   - Displays the camera preview and face-detection results in the injected widget.
+   - Activates or releases the page blur shield and warning banner according to the security state.
 
 ---
 

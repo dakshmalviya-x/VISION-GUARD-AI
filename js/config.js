@@ -19,55 +19,11 @@
 export const CONFIG = Object.freeze({
 
   // ─────────────────────────────────────────────────────────────────────────
-  // MODEL LOADING AND ASSETS
-  // These settings control which neural-network models are used for face
-  // detection and where their weight files are stored on disk.
+  // MODEL ASSETS
+  // Base path used by the retained modular recognition reference module.
   // ─────────────────────────────────────────────────────────────────────────
   MODELS: {
-    // Relative path (from index.html) to the folder that holds the model
-    // weight manifest files (.json) and binary shards (-weights.bin).
-    // Keeping models local means the app works fully offline — no CDN calls.
-    BASE_PATH: './models',
-
-    // Options passed directly to the TinyFaceDetector neural network.
-    // TinyFaceDetector is a small, fast model that uses depthwise-separable
-    // convolutions, making it ideal for real-time (30 fps) webcam inference
-    // on a laptop CPU without needing a dedicated GPU.
-    TINY_FACE_DETECTOR_OPTIONS: {
-      // inputSize (pixels): The resolution the input frame is internally
-      // rescaled to before being passed into the neural network.
-      // Allowed values: 160, 224, 320, 416, 512, 608
-      //   • Smaller (160) = faster but misses small or distant faces.
-      //   • Larger (608)  = more accurate but significantly slower.
-      //   • 320 is the sweet-spot for a 640×480 webcam at ~30 fps on a laptop.
-      inputSize: 320,
-
-      // scoreThreshold (0.0–1.0): Minimum confidence score a detection must
-      // reach before it is returned as a valid face.
-      //   • Too low  (< 0.3): Lots of false positives — hands, pillows, etc.
-      //   • Too high (> 0.7): Misses partially-occluded or side-profile faces.
-      //   • 0.5 is the conventional "50 % confident = worth reporting" baseline.
-      scoreThreshold: 0.5
-    },
-
-    // Options for SSD MobileNet V1, the alternative (higher-accuracy) detector.
-    // SSD MobileNet uses a full Single-Shot MultiBox Detector architecture,
-    // which is more accurate than TinyFaceDetector but slower to infer per frame.
-    // This block is only used when PREFER_TINY_DETECTOR is set to false below.
-    SSD_MOBILENET_OPTIONS: {
-      // minConfidence (0.0–1.0): Same role as scoreThreshold above but for SSD.
-      // 0.5 keeps the same 50 % confidence floor so behaviour is consistent
-      // regardless of which model is active.
-      minConfidence: 0.5
-    },
-
-    // PREFER_TINY_DETECTOR (boolean): Master switch that selects the detector.
-    //   true  → TinyFaceDetector (default) — fast, low CPU, good for 30 fps.
-    //   false → SSD MobileNet V1           — slower, higher accuracy.
-    // For a live-demo setting on a standard laptop, leave this as true.
-    // Switch to false only if detection reliability needs to be maximised and
-    // you can tolerate a lower frame rate (~10–15 fps).
-    PREFER_TINY_DETECTOR: true
+    BASE_PATH: './models'
   },
 
   // ─────────────────────────────────────────────────────────────────────────

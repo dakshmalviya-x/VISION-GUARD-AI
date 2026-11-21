@@ -26,7 +26,7 @@ The project root is the unpacked extension package; keep `manifest.json` at its 
 - `tests/` — Node.js checks for recognition, gaze, and security-decision logic.
 - `docs/` — project and academic documentation.
 
-The `js/config.js`, `js/camera.js`, `js/face-detection.js`, `js/face-recognition.js`, `js/gaze-estimation.js`, `js/security-engine.js`, and `js/enrollment.js` modules are retained as modular reference implementations; the injected extension runtime is `js/content-script.js` and does not import these ES modules.
+`js/content-script.js` contains the extension's injected runtime. The `js/config.js`, `js/face-recognition.js`, `js/gaze-estimation.js`, and `js/security-engine.js` modules are retained only as testable reference implementations; the extension does not import these ES modules.
 
 ## Permissions and privacy
 

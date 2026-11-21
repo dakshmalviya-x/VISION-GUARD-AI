@@ -21,17 +21,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "js/vendor/face-api.js",
-        "js/config.js",
-        "js/camera.js",
-        "js/face-detection.js",
-        "js/face-recognition.js",
-        "js/gaze-estimation.js",
-        "js/security-engine.js",
-        "js/enrollment.js",
-        "js/content-script.js",
-        "models/*",
-        "shield.css"
+        "models/*-weights_manifest.json",
+        "models/*.bin"
       ],
       "matches": ["<all_urls>"]
     }

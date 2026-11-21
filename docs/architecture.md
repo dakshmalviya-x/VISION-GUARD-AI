@@ -43,4 +43,4 @@ The extension can affect webpage DOM content only. Browser-internal pages, exten
 
 ## Reference modules and tests
 
-The ES modules under `js/` are retained as modular reference implementations. The extension's injected script is a classic script and has its own runtime implementation; it does not import these ES modules. `tests/run-tests.js` runs Node.js checks against the reference recognition, gaze, and security-engine modules. Keep these modules distinct from the injected runtime unless the extension loading model is intentionally refactored and verified.
+`js/config.js`, `js/face-recognition.js`, `js/gaze-estimation.js`, and `js/security-engine.js` are retained as testable reference modules. The extension's injected script is a classic script and has its own runtime implementation; it does not import these ES modules. `tests/run-tests.js` runs Node.js checks against the reference recognition, gaze, and security-engine modules. Keep these modules distinct from the injected runtime unless the extension loading model is intentionally refactored and verified.
